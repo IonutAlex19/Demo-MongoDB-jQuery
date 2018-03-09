@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>My page</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"> </script>
+</head>
+<body>
+	<div class = "result">
+	</div>
+
+	<fieldset>
+		<legend>Insert data</legend>
+		<input type = "text" placeholder="Nume" id = "nume">
+		<input type = "text" placeholder="Prenume" id = "prenume">
+		<input type = "text" placeholder="Functie" id ="functie">
+		<input type = "number" placeholder="Salariu" id = "salariu">
+		<input type = "text" placeholder = "Departament" id = "departament">
+		<br><br>
+		<button id = "send"> Send </button>
+
+	</fieldset>
+
+	<input type = "text " id = "findText" placeholder="Cauta dupa numele...">
+	<button id = "search">Search</button>
+
+	<fieldset>
+		<legend>Update</legend>
+		<input type = "text" placeholder = "Find" id = "find">
+		<input type = "text" placeholder = "Replace" id ="replace">
+		<br><br>
+		<button id = "update"> Update </button>
+	</fieldset>
+
+	<input type = "text" id = "deleteOne" placeholder=" Sterge...">
+	<button id = "delete">Delete</button>
+
+	<script type="text/javascript">
+		$.get('/selectAllAngajat', function(data) {
+			for(let i = 0; i < data.length; ++i){
+				$('.result').append(
+					'Nume : '+ data[i].nume + '<br>' +
+					'Prenume: ' + data[i].prenume + '<br>' +
+					'Salariu: ' + data[i].salariu + '<br>'
+				);
+			}
+		});	
+
+		$('#send').click(function(){
+			var objToMongo = {
+				nume:$('#nume').val(),
+				prenume:$('#prenume').val(),
+				functie:$('#functie').val(),
+				salariu:$('#salariu').val(),
+				departament:$('#departament').val()
+			};
+
+			$.post('/insertAngajat', objToMongo, function(data){}, 'json');
+
+			alert("Ati inserat cu succes");
+			window.location = '/';
+		});
+		$('#search').click(function(){
+			$.get('/selectByNameAngajat/'+ $('#findText').val(), function(data) {
+			alert(data[0].prenume);
+
+		});
+	});
+
+		$('#update').click(function(){
+			var objToMongo = {
+				find: {
+					nume: $('#find').val()
+				},
+				replace: {
+					nume: $('#replace').val()
+				}
+			};
+
+			$.post ('/update', objToMongo, function(data){}, 'json');
+			alert('Update succesfull');
+			window.location = '/';
+
+		});
+		$('#delete').click(function(){
+			$.get('/deleteByName/' + $('#deleteOne').val(), function(data){});
+			alert('Am sters cu succes');
+			window.location = '/';
+		});
+	</script>
+</body>
+</html>
